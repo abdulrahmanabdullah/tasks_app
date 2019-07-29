@@ -1,7 +1,7 @@
 import 'package:moor_flutter/moor_flutter.dart';
 import 'package:moor/moor.dart';
 
-part 'todo_database.g.dart';
+part 'task_database.g.dart';
 
 class Tasks extends Table {
   IntColumn get id => integer().autoIncrement()();

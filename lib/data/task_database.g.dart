@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'todo_database.dart';
+part of 'task_database.dart';
 
 // **************************************************************************
 // MoorGenerator

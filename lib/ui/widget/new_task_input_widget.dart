@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart';
 import 'package:provider/provider.dart';
-import '../../data/todo_database.dart';
+import '../../data/task_database.dart';
 
 class NewTaskInput extends StatefulWidget {
   @override

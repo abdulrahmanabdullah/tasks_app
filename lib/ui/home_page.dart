@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import '../data/todo_database.dart';
 import 'widget/new_task_input_widget.dart';
+import 'widget/warning_dialog.dart';
+import 'widget/when_screen_empty.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,39 +12,33 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   bool isCompleteTask = false;
+  bool isEmpty;
 
-  PopupChoice _select ;
+   String _message = "Add some";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("ToDo App"),
+      appBar: AppBar(
+        title: Text("Tasks"),
         actions: <Widget>[
           _buildCompleteOnlySwitch(),
           PopupMenuButton<PopupChoice>(
-            onSelected:(PopupChoice pChoice){
-              setState(() {
-                _select = pChoice ;
-                _deleteAllTask(_select);
-              });
-            },
-            itemBuilder: (context)=>[
-              PopupMenuItem<PopupChoice>(
-                value: PopupChoice.deleteAll,
-                child: Text("Delete All"),
-              ),
-              PopupMenuItem<PopupChoice>(
-                value: PopupChoice.add,
-                child: Text("Add "),
-              ),
-            ] ,
+            onSelected: (PopupChoice pChoice) {},
+            itemBuilder: (context) => [
+                  PopupMenuItem<PopupChoice>(
+                    value: PopupChoice.deleteAll,
+                    child: ConfirmDeleteDialog(),
+                  ),
+                ],
           ),
         ],
       ),
       body: Column(
         children: <Widget>[
           Expanded(child: _buildTaskList(context)),
+          // Input field -> task name and date ..
           NewTaskInput(),
         ],
       ),
@@ -51,18 +47,23 @@ class _HomePageState extends State<HomePage> {
 
   StreamBuilder<List<Task>> _buildTaskList(context) {
     final dao = Provider.of<TaskDao>(context);
+    print("Call berfore Stream builder ");
     return StreamBuilder(
-      stream: isCompleteTask ? dao.watchCompletedTaskGeneratedQueryStatement() : dao.watchAllTask(),
+      stream: isCompleteTask
+          ? dao.watchCompletedTaskGeneratedQueryStatement()
+          : dao.watchAllTask(),
       builder: (context, AsyncSnapshot<List<Task>> snapshot) {
         final tasks = snapshot.data ?? List();
-
-        return ListView.builder(
-            itemCount: tasks.length,
-            itemBuilder: (_, index) {
-              final task = tasks[index];
-              return _buildListItem(task, dao);
-            }
-        );
+        // check table empty or not if it's build beaut shape 😃
+        isEmpty = _isTableEmpty(tasks);
+        return isEmpty
+            ? WhenScreenEmptyWidget(_message)
+            : ListView.builder(
+                itemCount: tasks.length,
+                itemBuilder: (_, index) {
+                  final task = tasks[index];
+                  return _buildListItem(task, dao);
+                });
       },
     );
   }
@@ -96,17 +97,19 @@ class _HomePageState extends State<HomePage> {
           value: isCompleteTask,
           activeColor: Colors.white,
           onChanged: (value) {
-            setState(() => isCompleteTask = value );
+            setState(() {
+              isCompleteTask = value;
+            });
           },
         ),
       ],
     );
   }
 
-  void _deleteAllTask(PopupChoice choice){
-    print(choice);
+  // check table - tasks - it's empty or not.
+  bool _isTableEmpty(List<Task> tasks) {
+    return tasks.isEmpty ;
   }
 }
 
-enum PopupChoice{deleteAll,add}
-
+enum PopupChoice { deleteAll }

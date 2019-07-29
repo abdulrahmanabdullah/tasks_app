@@ -265,4 +265,14 @@ mixin _$TaskDaoMixin on DatabaseAccessor<AppDatabase> {
         variables: [],
         readsFrom: {tasks}).map((rows) => rows.map(_rowToTask).toList());
   }
+
+  Future<int> deleteAllRows(
+      {@Deprecated('No longer needed with Moor 1.6 - see the changelog for details')
+          QueryEngine operateOn}) {
+    return (operateOn ?? this).customUpdate(
+      'DELETE FROM tasks ;',
+      variables: [],
+      updates: {tasks},
+    );
+  }
 }

@@ -6,8 +6,6 @@ import '../../data/todo_database.dart';
 class NewTaskInput extends StatefulWidget {
   @override
   _NewTaskInputState createState() => _NewTaskInputState();
-
-  NewTaskInput({Key key}) : super(key: key);
 }
 
 class _NewTaskInputState extends State<NewTaskInput> {

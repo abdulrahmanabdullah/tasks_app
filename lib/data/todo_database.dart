@@ -27,7 +27,8 @@ class AppDatabase extends _$AppDatabase {
   Tasks
 ], queries: {
   'completedTaskGeneratedQueryStatement':
-      'SELECT * FROM tasks WHERE is_Completed = 1 ORDER BY due_date DESC, name;'
+      'SELECT * FROM tasks WHERE is_Completed = 1 ORDER BY due_date DESC, name;',
+  'deleteAllRows': 'DELETE FROM tasks ;'
 })
 class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
   final AppDatabase db;
@@ -48,8 +49,6 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         .watch());
   }
 
-
-
   //Custom select queries
   // so far this not working ... 😥
   Stream<List<Task>> watchCompletedTaskCustom() {
@@ -60,6 +59,10 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     });
   }
 
+  //Get all tasks as a int
+  Future<int> getTasks(List<Tasks> tak){
+    return Future.value(tak.length);
+  }
   Future insertTask(Insertable<Task> task) => into(tasks).insert(task);
 
   Future updateTask(Insertable<Task> task) => update(tasks).replace(task);

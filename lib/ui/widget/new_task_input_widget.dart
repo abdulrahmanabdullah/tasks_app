@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import '../../data/task_database.dart';
 
 class NewTaskInput extends StatefulWidget {
@@ -11,6 +12,9 @@ class NewTaskInput extends StatefulWidget {
 class _NewTaskInputState extends State<NewTaskInput> {
   // date value
   DateTime taskDate;
+
+  // Tag name
+  Tag selectTag;
 
   // Controller of task name
   TextEditingController controller;
@@ -30,6 +34,7 @@ class _NewTaskInputState extends State<NewTaskInput> {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           _buildTextField(context),
+          _buildTagSelector(context),
           _buildDateButton(context),
         ],
       ),
@@ -39,16 +44,22 @@ class _NewTaskInputState extends State<NewTaskInput> {
   // Build text field widget ...
   Expanded _buildTextField(context) {
     return Expanded(
+      flex: 1,
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
           hintText: "Task name",
         ),
         onSubmitted: (newTaskName) {
-          final database = Provider.of<TaskDao>(context);
+          if(selectTag == null){
+            _showDialogWhenTagEmpty(context);
+          }
+          final dao = Provider.of<TaskDao>(context);
           final task = TasksCompanion(
-              name: Value(newTaskName), dueDate: Value(taskDate));
-          database.insertTask(task);
+              name: Value(newTaskName),
+              dueDate: Value(taskDate),
+              tagName: Value(selectTag.name));
+          dao.insertTask(task);
           _resetValuesAfterSubmit();
         },
       ),
@@ -74,6 +85,86 @@ class _NewTaskInputState extends State<NewTaskInput> {
     setState(() {
       taskDate = null;
       controller.clear();
+      selectTag = null;
     });
+  }
+
+  // observe tags
+  StreamBuilder<List<Tag>> _buildTagSelector(BuildContext context) {
+    return StreamBuilder(
+      stream: Provider.of<TagDao>(context).watchTags(),
+      builder: (context, snapshot) {
+        final tags = snapshot.data ?? List();
+
+        final dropdownMenuItems =
+        tags.map((tag) => _dropdownMenuFromTag(tag)).toList()
+          ..insert(
+              0,
+              DropdownMenuItem(
+                value: null,
+                child: Text("no Tag"),
+              ));
+
+        return Expanded(
+          flex: 1,
+          child: Container(
+            alignment: Alignment.topCenter,
+            padding: EdgeInsets.only(top: 10),
+            child: DropdownButton(
+              items: dropdownMenuItems,
+              onChanged: (Tag tag) {
+                setState(() => selectTag = tag);
+              },
+              isExpanded: false,
+              value: selectTag,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // layout of drop down menu tags ..
+  DropdownMenuItem<Tag> _dropdownMenuFromTag(Tag tag) {
+    return DropdownMenuItem(
+      value: tag,
+      child: Row(
+        children: <Widget>[
+          Text(tag.name),
+          SizedBox(
+            width: 5,
+          ),
+          Container(
+            width: 15,
+            height: 15,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(tag.color),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // alert dialog when user leave tag  empty.
+  Future _showDialogWhenTagEmpty(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Fialed adding "),
+            content: Text("Please add tag name"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Ok"),
+                textColor: Colors.indigo,
+                onPressed: (){
+                Navigator.of(context).pop();
+              },),
+            ],
+          ) ;
+        }
+    );
   }
 }

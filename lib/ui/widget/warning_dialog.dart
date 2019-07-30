@@ -8,9 +8,7 @@ class ConfirmDeleteDialog extends StatefulWidget {
 }
 
 class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
-
   bool isTableEmpty = true;
-
 
   @override
   void didChangeDependencies() {
@@ -29,8 +27,6 @@ class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
     );
   }
 
-
-
   Future _showDialog(context) {
     return showDialog(
         context: context,
@@ -41,41 +37,39 @@ class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
 
   Widget _buildAlertDialog(bool status) {
     _checkBeforeDelete();
-    return status ? AlertDialog(
-      title: Text("Not found data"),
-      content: Text("You dont have task, Please add some"),
-      actions: <Widget>[
-        FlatButton(
-          textColor: Theme
-              .of(context)
-              .accentColor,
-          child: Text("Ok!"),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ],
-    ) : AlertDialog(
-      title: Text("Are you sure ?"),
-      content: Text("This well be remove all data"),
-      actions: <Widget>[
-        FlatButton(
-          textColor: Theme
-              .of(context)
-              .accentColor,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text("Cancel"),
-        ),
-        FlatButton(
-          textColor: Colors.red,
-          onPressed: () {
-            _deleteRows(context);
-            Navigator.pop(context);
-          },
-          child: Text("Delete"),
-        ),
-      ],
-    );
+    return status
+        ? AlertDialog(
+            title: Text("Not found data"),
+            content: Text("You dont have task, Please add some"),
+            actions: <Widget>[
+              FlatButton(
+                textColor: Theme.of(context).accentColor,
+                child: Text("Ok!"),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          )
+        : AlertDialog(
+            title: Text("Are you sure ?"),
+            content: Text("This well be remove all data"),
+            actions: <Widget>[
+              FlatButton(
+                textColor: Theme.of(context).accentColor,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("Cancel"),
+              ),
+              FlatButton(
+                textColor: Colors.red,
+                onPressed: () {
+                  _deleteRows(context);
+                  Navigator.pop(context);
+                },
+                child: Text("Delete"),
+              ),
+            ],
+          );
   }
 
   _deleteRows(context) {
@@ -83,15 +77,12 @@ class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
     dao.deleteAllRows();
   }
 
-
-
-
-  _checkBeforeDelete(){
+  _checkBeforeDelete() {
     final dao = Provider.of<TaskDao>(context);
     var allTask = dao.getAllTask();
-    allTask.then((tasks){
-        print("Call check before delete");
-        isTableEmpty = tasks.isEmpty ;
+    allTask.then((tasks) {
+      print("Call check before delete");
+      isTableEmpty = tasks.isEmpty;
     });
   }
 }

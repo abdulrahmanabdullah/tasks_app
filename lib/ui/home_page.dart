@@ -5,6 +5,7 @@ import '../data/task_database.dart';
 import 'widget/new_task_input_widget.dart';
 import 'widget/warning_dialog.dart';
 import 'widget/when_screen_empty.dart';
+import 'widget/new_tag_input.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,9 +14,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isCompleteTask = false;
-  bool isEmpty;
+  bool isEmpty = false;
 
-   String _message = "Add some";
+  String _message = "Empty Add/OR compete some";
 
   @override
   Widget build(BuildContext context) {
@@ -40,21 +41,22 @@ class _HomePageState extends State<HomePage> {
           Expanded(child: _buildTaskList(context)),
           // Input field -> task name and date ..
           NewTaskInput(),
+          NewTagInputWidget(),
         ],
       ),
     );
   }
 
-  StreamBuilder<List<Task>> _buildTaskList(context) {
+  StreamBuilder<List<TaskWithTag>> _buildTaskList(context) {
     final dao = Provider.of<TaskDao>(context);
     print("Call berfore Stream builder ");
     return StreamBuilder(
       stream: isCompleteTask
-          ? dao.watchCompletedTaskGeneratedQueryStatement()
-          : dao.watchAllTask(),
-      builder: (context, AsyncSnapshot<List<Task>> snapshot) {
+          ? dao.watchAllCompletedTaskWithTag()
+          : dao.watchAllTaskWithTag(),
+      builder: (context, AsyncSnapshot<List<TaskWithTag>> snapshot) {
         final tasks = snapshot.data ?? List();
-        // check table empty or not if it's build beaut shape 😃
+        // check table empty or not if yes build beaut shape 😃
         isEmpty = _isTableEmpty(tasks);
         return isEmpty
             ? WhenScreenEmptyWidget(_message)
@@ -62,30 +64,62 @@ class _HomePageState extends State<HomePage> {
                 itemCount: tasks.length,
                 itemBuilder: (_, index) {
                   final task = tasks[index];
-                  return _buildListItem(task, dao);
+                  return _buildListItem(task, dao,index + 1);
                 });
       },
     );
   }
 
-  Widget _buildListItem(Task task, TaskDao database) {
+  Widget _buildListItem(TaskWithTag item, TaskDao database,int index) {
     return Slidable(
+      actions: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(item.tag.name),
+        ),
+      ],
       actionPane: SlidableDrawerActionPane(),
       secondaryActions: <Widget>[
         IconSlideAction(
           caption: 'delete',
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () => database.deleteTask(task),
+          onTap: () => database.deleteTask(item.task),
         ),
       ],
       child: CheckboxListTile(
-          title: Text(task.name),
-          subtitle: Text(task.dueDate?.toString() ?? 'No Date'),
-          value: task.isCompleted,
+          title: Text(item.task.name),
+          subtitle: Text(item.task.dueDate?.toString() ?? 'No Date'),
+          value: item.task.isCompleted,
+          secondary: _buildTag(item.tag,index),
           onChanged: (value) {
-            database.updateTask(task.copyWith(isCompleted: value));
+            database.updateTask(item.task.copyWith(isCompleted: value));
           }),
+    );
+  }
+
+  Column _buildTag(Tag tag,int index) {
+    assert(tag != null);
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+//      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        if (tag != null) ...[
+          Container(
+            child: Center(
+              child: Text(index.toString(),style: TextStyle(color: Colors.white),),
+
+            ),
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(tag.color),
+            ),
+          ),
+        ]
+      ],
     );
   }
 
@@ -107,8 +141,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   // check table - tasks - it's empty or not.
-  bool _isTableEmpty(List<Task> tasks) {
-    return tasks.isEmpty ;
+  bool _isTableEmpty(List<TaskWithTag> tasks) {
+    return tasks.isEmpty;
   }
 }
 

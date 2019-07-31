@@ -14,9 +14,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // to filter completed and not completed task
   bool isCompleteTask = false;
+  // check  table empty or not
   bool isEmpty = false;
 
+  // when empty table appear this message
   String _message = "Empty Add/OR compete some";
 
   @override
@@ -24,6 +27,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
+          // Localization this text
             AppLocalizations.of(context).translate("app_title")),
         actions: <Widget>[
           _buildCompleteOnlySwitch(),
@@ -132,9 +136,7 @@ class _HomePageState extends State<HomePage> {
           value: isCompleteTask,
           activeColor: Colors.white,
           onChanged: (value) {
-            setState(() {
-              isCompleteTask = value;
-            });
+            setState(() => isCompleteTask = value);
           },
         ),
       ],
@@ -147,4 +149,5 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+// For PopupMenuItem, you can add more if you need.
 enum PopupChoice { deleteAll }

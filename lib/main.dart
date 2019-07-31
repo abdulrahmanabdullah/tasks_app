@@ -19,6 +19,7 @@ class MainApp extends StatelessWidget {
         Provider(builder: (_) => db.tagDao)
       ],
       child: MaterialApp(
+        title: "Tasks",
         supportedLocales: [
           Locale('ar', 'Arabic'),
           Locale('en', 'US'),

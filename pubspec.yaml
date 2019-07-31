@@ -39,10 +39,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   moor_generator: ^1.6.0
+  flutter_launcher_icons: ^0.7.2+1
   build_runner:
 
 
 
+flutter_icons:
+  image_path: "asset/images/app_icon.png"
+  android: "launcher_icon"
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 

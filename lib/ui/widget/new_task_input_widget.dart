@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import '../../data/task_database.dart';
+import '../../app_localizations.dart';
 
 class NewTaskInput extends StatefulWidget {
   @override
@@ -48,7 +48,7 @@ class _NewTaskInputState extends State<NewTaskInput> {
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
-          hintText: "Task name",
+          hintText:AppLocalizations.of(context).translate("task_name"),
         ),
         onSubmitted: (newTaskName) {
           if(selectTag == null){
@@ -102,7 +102,7 @@ class _NewTaskInputState extends State<NewTaskInput> {
               0,
               DropdownMenuItem(
                 value: null,
-                child: Text("no Tag"),
+                child: Text(AppLocalizations.of(context).translate("no_tag")),
               ));
 
         return Expanded(

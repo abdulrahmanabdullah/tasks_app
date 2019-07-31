@@ -6,6 +6,7 @@ import 'widget/new_task_input_widget.dart';
 import 'widget/warning_dialog.dart';
 import 'widget/when_screen_empty.dart';
 import 'widget/new_tag_input.dart';
+import '../app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -22,7 +23,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tasks"),
+        title: Text(
+            AppLocalizations.of(context).translate("app_title")),
         actions: <Widget>[
           _buildCompleteOnlySwitch(),
           PopupMenuButton<PopupChoice>(
@@ -49,7 +51,6 @@ class _HomePageState extends State<HomePage> {
 
   StreamBuilder<List<TaskWithTag>> _buildTaskList(context) {
     final dao = Provider.of<TaskDao>(context);
-    print("Call berfore Stream builder ");
     return StreamBuilder(
       stream: isCompleteTask
           ? dao.watchAllCompletedTaskWithTag()
@@ -126,7 +127,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildCompleteOnlySwitch() {
     return Row(
       children: <Widget>[
-        Text("Compete Only"),
+        Text(AppLocalizations.of(context).translate("complete_task")),
         Switch(
           value: isCompleteTask,
           activeColor: Colors.white,

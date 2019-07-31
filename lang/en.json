@@ -1,0 +1,9 @@
+{
+  "app_title": "Tasks",
+  "task_name" : "Task name",
+  "tag_name": "Tag name",
+  "complete_task": "Complete only",
+  "delete_all": "Delete All",
+  "no_tag": "no tag"
+
+}

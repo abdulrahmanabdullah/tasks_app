@@ -3,6 +3,7 @@ import 'package:flutter_material_color_picker/flutter_material_color_picker.dart
 import 'package:provider/provider.dart';
 import 'package:moor/moor.dart';
 import '../../data/task_database.dart';
+import '../../app_localizations.dart';
 
 class NewTagInputWidget extends StatefulWidget {
   @override
@@ -42,7 +43,7 @@ class _NewTagInputWidgetState extends State<NewTagInputWidget> {
       flex: 1,
       child: TextField(
         controller: controller,
-        decoration: InputDecoration(hintText: 'Tag name'),
+        decoration: InputDecoration(hintText:AppLocalizations.of(context).translate("tag_name")),
         onSubmitted: (inputName){
           final dao = Provider.of<TagDao>(context) ;
           final tag = TagsCompanion(name: Value(inputName),color: Value(pickerTagColor.value));

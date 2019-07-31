@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/task_database.dart';
+import '../../app_localizations.dart';
 
 class ConfirmDeleteDialog extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _ConfirmDeleteDialogState extends State<ConfirmDeleteDialog> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text("Delete All"),
+      title: Text(AppLocalizations.of(context).translate("delete_all")),
       leading: Icon(Icons.warning),
       onTap: () {
         _showDialog(context);
